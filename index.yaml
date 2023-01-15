@@ -14,6 +14,16 @@ entries:
   test2:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-01-15T08:49:07.087535201Z"
+    description: A Helm chart test for Kubernetes
+    digest: e3854211d57dfd31c31959d03bd230d3cf63b3bce0ec6617bedab4b5c3b4f24c
+    name: test2
+    type: application
+    urls:
+    - https://github.com/Coollision/helm-charts/releases/download/test2-0.1.1/test2-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-01-14T22:21:11.826442179Z"
     description: A Helm chart for Kubernetes
     digest: c070677ba12368a74e0171fe81e054dbd35054832f4ee2ec1e91ba04cad02a57
@@ -22,4 +32,4 @@ entries:
     urls:
     - https://github.com/Coollision/helm-charts/releases/download/test2-0.1.0/test2-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-14T22:21:11.826446479Z"
+generated: "2023-01-15T08:49:07.087541401Z"
