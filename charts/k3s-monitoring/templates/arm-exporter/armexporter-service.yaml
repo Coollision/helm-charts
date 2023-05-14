@@ -1,0 +1,17 @@
+{{- if .Values.arm-exporter.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: {{ .Release.Name }}-arm-exporter
+  name: {{ .Release.Name }}-arm-exporter
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 9243
+      targetPort: http
+  selector:
+    k8s-app: {{ .Release.Name }}-arm-exporter
+{{- end -}}

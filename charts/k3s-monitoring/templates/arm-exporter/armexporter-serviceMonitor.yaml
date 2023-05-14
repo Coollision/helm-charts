@@ -1,0 +1,28 @@
+{{- if .Values.arm-exporter.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: {{ .Release.Name }}-arm-exporter
+  name: {{ .Release.Name }}-arm-exporter
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - interval: 30s
+      port: http
+      scheme: http
+      relabelings:
+        - action: replace
+          regex: (.*)
+          replacement: $1
+          targetLabel: instance
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+  jobLabel: {{ .Release.Name }}-arm-exporter
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      k8s-app: {{ .Release.Name }}-arm-exporter
+{{- end }}
