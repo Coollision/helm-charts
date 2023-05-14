@@ -1,0 +1,24 @@
+{{- if .Values.useTraefikIngressRoutes }}
+{{- $promStack := merge (deepCopy .) (dict "Values" (deepCopy .Values.promstack))  }}
+{{- $serviceName := printf "%s-%s" (include "kube-prometheus-stack.fullname" $promStack ) "prometheus" }}
+{{- $host := .Values.promstack.prometheus.prometheusSpec.externalUrl | trimPrefix `https://` | trimPrefix `http://` | trimSuffix `/` }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $serviceName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "k3s-monitoring.labels" . | indent 2 }}
+spec:
+  entryPoints: []
+  routes:
+  - kind: Rule
+    match: Host(`{{ $host }}`) && ( PathPrefix(`/`) || PathPrefix(`/api/v1/`) || PathPrefix(`/api/v1/query/`))
+    middlewares: []
+    priority: 0
+    services:
+    - kind: Service
+      name: {{ $serviceName }}
+      namespace: {{ .Release.Namespace }}
+      port: 9090
+{{ end }}

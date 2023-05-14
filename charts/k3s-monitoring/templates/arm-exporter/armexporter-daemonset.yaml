@@ -1,0 +1,47 @@
+{{- if .Values.armexporter.enabled -}}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: {{ .Release.Name }}-arm-exporter
+  name: {{ .Release.Name }}-arm-exporter
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: {{ .Release.Name }}-arm-exporter
+  template:
+    metadata:
+      labels:
+        k8s-app: {{ .Release.Name }}-arm-exporter
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm
+                      - arm64
+      containers:
+        - command:
+            - /bin/rpi_exporter
+            - --web.listen-address=0.0.0.0:9243
+          image: carlosedp/arm_exporter:latest
+          name: {{ .Release.Name }}-arm-exporter
+          ports:
+            - containerPort: 9243
+              hostPort: 9243
+              name: http
+          resources:
+            limits:
+              cpu: 150m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          securityContext:
+            privileged: true
+{{- end -}}

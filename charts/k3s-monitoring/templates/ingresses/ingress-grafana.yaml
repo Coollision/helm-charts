@@ -1,0 +1,24 @@
+{{- if .Values.useTraefikIngressRoutes }}
+{{- $grafStack := merge (dict "Release" (deepCopy .Release)) (dict "Values" (deepCopy .Values.promstack.grafana)) (dict "Chart" (dict "Name" "grafana")) }}
+{{- $host := .Values.promstack.grafana.externalUrl | trimPrefix `https://` | trimPrefix `http://` | trimSuffix `/`  }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "grafana.fullname" $grafStack }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "k3s-monitoring.labels" . | indent 2 }}
+spec:
+  entryPoints: 
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`{{ $host }}`) && ( PathPrefix(`/`) || PathPrefix(`/api/dashboards/`) ||  PathPrefix(`/api/`))
+    middlewares: []
+    priority: 0
+    services:
+    - kind: Service
+      name: {{ include "grafana.fullname" $grafStack }}
+      namespace: {{ .Release.Namespace }}
+      port: 80
+{{- end -}}

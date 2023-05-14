@@ -1,0 +1,17 @@
+{{- if .Values.speedtestExporter.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-speedtest-exporter
+{{ include "k3s-monitoring.labels" . | indent 4 }}
+  name: {{ .Release.Name }}-speedtest-exporter
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - name: metrics
+      port: 9798
+      targetPort: metrics
+  selector:
+    app: {{ .Release.Name }}-speedtest-exporter
+{{- end -}}

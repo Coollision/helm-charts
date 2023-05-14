@@ -1,0 +1,165 @@
+useTraefikIngressRoutes: true
+
+speedtestExporter:
+  enabled: true
+  scrapeInterval: 5m
+
+armexporter:
+  enabled: true
+
+promstack:
+  nameOverride: promstack
+  cleanPrometheusOperatorObjectNames: true
+  # for details see: => https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+  defaultRules:
+    rules:
+      etcd: false
+
+  kubeEtcd:
+    enabled: false
+
+  kubeControllerManager:
+    enabled: true
+    endpoints:
+      - xxx.xxx.xxx.xxx
+    service:
+      enabled: true
+      port: 10257
+      targetPort: 10257
+    serviceMonitor:
+      enabled: true
+      https: true
+      insecureSkipVerify: true
+  kubeScheduler:
+    enabled: true
+    endpoints:
+      - xxx.xxx.xxx.xxx
+    service:
+      enabled: true
+      port: 10259
+      targetPort: 10259
+    serviceMonitor:
+      enabled: true
+      https: true
+      insecureSkipVerify: true
+
+  kubeProxy:
+    enabled: true
+    endpoints: 
+      - xxx.xxx.xxx.xxx
+    service:
+      enabled: true
+      port: 10249
+      targetPort: 10249
+
+  alertmanager:
+    alertmanagerSpec:
+      resources:
+        limits:
+          cpu: 60m
+          memory: 30Mi
+        requests:
+          cpu: 50m
+          memory: 20Mi
+
+  prometheus:
+    prometheusSpec:
+      retention: 40d
+      ruleSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false      
+      resources:
+        limits:
+          cpu: 2
+          memory: 2.5Gi
+        requests:
+          cpu: 1
+          memory: 2Gi  
+
+      # additional scrape job
+      additionalScrapeConfigs:
+        - job_name: kubernetes-pod-endpoints
+          kubernetes_sd_configs:
+          - {role: pod}
+          relabel_configs:
+          - action: keep
+            regex: true
+            source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          - action: keep
+            regex: true
+            source_labels: [__meta_kubernetes_pod_annotationpresent_prometheus_io_port]
+          - action: drop
+            regex: (kube-system|prom)
+            source_labels: [__meta_kubernetes_namespace]
+          - action: replace
+            regex: (https?)
+            source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+            target_label: __scheme__
+          - action: replace
+            regex: (.+)
+            source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            target_label: __metrics_path__
+          - action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            target_label: __address__
+          - {action: labelmap, regex: __meta_kubernetes_pod_label_(.+)}
+          - action: replace
+            source_labels: [__meta_kubernetes_namespace]
+            target_label: kubernetes_namespace
+          - action: replace
+            source_labels: [__meta_kubernetes_service_name]
+            target_label: kubernetes_name
+        - job_name: kubernetes-service-endpoints
+          kubernetes_sd_configs:
+          - {role: service}
+          relabel_configs:
+          - action: keep
+            regex: true
+            source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+          - action: drop
+            regex: (kube-system|prom)
+            source_labels: [__meta_kubernetes_namespace]
+          - action: keep
+            regex: .*metrics
+            source_labels: [__meta_kubernetes_service_port_name]
+          - action: replace
+            regex: (https?)
+            source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+            target_label: __scheme__
+          - action: replace
+            regex: (.+)
+            source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            target_label: __metrics_path__
+          - action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            target_label: __address__
+          - {action: labelmap, regex: __meta_kubernetes_service_label_(.+)}
+          - action: replace
+            source_labels: [__meta_kubernetes_namespace]
+            target_label: kubernetes_namespace
+          - action: replace
+            source_labels: [__meta_kubernetes_service_name]
+            target_label: kubernetes_name
+
+
+  grafana:
+    adminPassword: P@ssw0rd
+
+  prometheus-node-exporter:
+    nameOverride: "node-exporter"
+
+
+
+  # CRDs created by this chart are not removed by default and should be manually cleaned up:
+
+  # kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
+  # kubectl delete crd alertmanagers.monitoring.coreos.com
+  # kubectl delete crd podmonitors.monitoring.coreos.com
+  # kubectl delete crd probes.monitoring.coreos.com
+  # kubectl delete crd prometheuses.monitoring.coreos.com
+  # kubectl delete crd prometheusrules.monitoring.coreos.com
+  # kubectl delete crd servicemonitors.monitoring.coreos.com
+  # kubectl delete crd thanosrulers.monitoring.coreos.com

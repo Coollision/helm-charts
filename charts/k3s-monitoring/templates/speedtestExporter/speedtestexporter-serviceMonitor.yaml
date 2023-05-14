@@ -1,0 +1,30 @@
+{{- if .Values.speedtestExporter.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: {{ .Release.Name }}-speedtest-exporter
+{{ include "k3s-monitoring.labels" . | indent 4 }}
+  name: {{ .Release.Name }}-speedtest-exporter
+  namespace: {{ .Release.Namespace }}
+spec:
+  endpoints:
+    - interval: {{ .Values.speedtestExporter.scrapeInterval }}
+      port: metrics
+      scheme: http
+      scrapeTimeout: 40s
+      relabelings:
+        - action: replace
+          regex: (.*)
+          replacement: $1
+          targetLabel: instance
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+  jobLabel: speedtest-exporter-exporter
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-speedtest-exporter
+{{- end -}}

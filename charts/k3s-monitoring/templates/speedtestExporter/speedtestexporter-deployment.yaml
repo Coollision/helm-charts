@@ -1,0 +1,27 @@
+{{- if .Values.speedtestExporter.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Release.Name }}-speedtest-exporter
+{{ include "k3s-monitoring.labels" . | indent 4 }}
+  name: {{ .Release.Name }}-speedtest-exporter
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-speedtest-exporter
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-speedtest-exporter
+    spec:
+      containers:
+        - image: ghcr.io/miguelndecarvalho/speedtest-exporter
+          name: {{ .Release.Name }}-speedtest-exporter
+          ports:
+            - containerPort: 9798
+              name: metrics
+      restartPolicy: Always
+{{- end -}}
