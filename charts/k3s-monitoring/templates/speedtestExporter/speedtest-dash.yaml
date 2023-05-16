@@ -1,0 +1,20 @@
+{{- /* Added manually, can be changed in-place. */ -}}
+{{- $kubeTargetVersion := default .Capabilities.KubeVersion.GitVersion .Values.kubeTargetVersionOverride }}
+{{- if and (or .Values.promstack.grafana.enabled .Values.promstack.grafana.forceDeployDashboards) (semverCompare ">=1.14.0-0" $kubeTargetVersion) (semverCompare "<9.9.9-9" $kubeTargetVersion) .Values.promstack.grafana.defaultDashboardsEnabled .Values.speedtestExporter.enabled}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ printf "%s-%s" (include "kube-prometheus-stack.fullname" $) "speedtest-dash" | trunc 63 | trimSuffix "-" }}
+  annotations:
+{{ toYaml .Values.promstack.grafana.sidecar.dashboards.annotations | indent 4 }}
+  labels:
+    {{- if $.Values.promstack.grafana.sidecar.dashboards.label }}
+    {{ $.Values.promstack.grafana.sidecar.dashboards.label }}: {{ ternary $.Values.promstack.grafana.sidecar.dashboards.labelValue "1" (not (empty $.Values.promstack.grafana.sidecar.dashboards.labelValue)) | quote }}
+    {{- end }}
+    app: {{ template "kube-prometheus-stack.name" $ }}-grafana
+{{ include "kube-prometheus-stack.labels" $ | indent 4 }}
+data:
+  speedtest-dash.json: |-
+    {{- $.Files.Get "grafana-dashboards/speedtest-dash.json" | nindent 5 }}
+{{- end -}}

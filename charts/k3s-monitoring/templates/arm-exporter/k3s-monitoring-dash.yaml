@@ -1,0 +1,20 @@
+{{- /* Added manually, can be changed in-place. */ -}}
+{{- $kubeTargetVersion := default .Capabilities.KubeVersion.GitVersion .Values.kubeTargetVersionOverride }}
+{{- if and (or .Values.promstack.grafana.enabled .Values.promstack.grafana.forceDeployDashboards) (semverCompare ">=1.14.0-0" $kubeTargetVersion) (semverCompare "<9.9.9-9" $kubeTargetVersion) .Values.promstack.grafana.defaultDashboardsEnabled .Values.armexporter.enabled}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ printf "%s-%s" (include "kube-prometheus-stack.fullname" $) "k3s-monitoring-dash" | trunc 63 | trimSuffix "-" }}
+  annotations:
+{{ toYaml .Values.promstack.grafana.sidecar.dashboards.annotations | indent 4 }}
+  labels:
+    {{- if $.Values.promstack.grafana.sidecar.dashboards.label }}
+    {{ $.Values.promstack.grafana.sidecar.dashboards.label }}: {{ ternary $.Values.promstack.grafana.sidecar.dashboards.labelValue "1" (not (empty $.Values.promstack.grafana.sidecar.dashboards.labelValue)) | quote }}
+    {{- end }}
+    app: {{ template "kube-prometheus-stack.name" $ }}-grafana
+{{ include "kube-prometheus-stack.labels" $ | indent 4 }}
+data:
+  k3s-monitoring.json: |-
+    {{- $.Files.Get "grafana-dashboards/k3s-monitoring.json" | nindent 5 }}
+{{- end -}}
