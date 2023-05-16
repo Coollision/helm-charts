@@ -3,6 +3,26 @@ entries:
   k3s-monitoring:
   - apiVersion: v2
     appVersion: 0.63.0
+    created: "2023-05-16T20:52:08.923957609Z"
+    dependencies:
+    - alias: promstack
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 45.27.2
+    description: A Helm chart for Kubernetes
+    digest: 4394ca024f8e97d095281421d900dc44bb66802a6fac028bf94857ad7ee82d92
+    home: https://coollision.github.io/helm-charts/
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: Coollision@users.noreply.github.com
+      name: coollision
+    name: k3s-monitoring
+    type: application
+    urls:
+    - https://github.com/Coollision/helm-charts/releases/download/k3s-monitoring-0.1.2/k3s-monitoring-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.63.0
     created: "2023-05-16T20:29:10.960003104Z"
     dependencies:
     - alias: promstack
@@ -40,4 +60,4 @@ entries:
     urls:
     - https://github.com/Coollision/helm-charts/releases/download/k3s-monitoring-0.1.0/k3s-monitoring-0.1.0.tgz
     version: 0.1.0
-generated: "2023-05-16T20:29:10.960016404Z"
+generated: "2023-05-16T20:52:08.92397771Z"
