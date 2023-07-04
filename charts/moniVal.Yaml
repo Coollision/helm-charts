@@ -1,0 +1,57 @@
+traefik:
+  useIngressRoutes: true
+
+speedtestExporter:
+  enabled: true
+
+armexporter:
+  enabled: true
+
+promstack:
+  kubeControllerManager:
+    endpoints:
+      - 172.18.0.3
+  kubeScheduler:
+    endpoints:
+      - 172.18.0.3
+  kubeProxy:
+    endpoints:
+      - 172.18.0.3
+
+  alertmanager:
+    alertmanagerSpec:
+      externalUrl: http://alertmanager.pitest/
+      storage:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: "nfs-client"
+            annotations:
+              nfs.io/storage-path: "alertmanager"
+            resources:
+              requests:
+                storage: 10Gi
+
+  prometheus:
+    prometheusSpec:
+      externalUrl: http://prometheus.pitest/
+      retention: 40d
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: "nfs-client"
+            annotations:
+              nfs.io/storage-path: "prometheus"
+            resources:
+              requests:
+                storage: 30Gi
+
+  grafana:
+    externalUrl: http://grafana.pitest/
+    adminPassword: P@ssw0rd
+    persistence:
+      enabled: true
+      storageClassName: "nfs-client"
+      annotations:
+        nfs.io/storage-path: "grafana"
+      accessModes: ["ReadWriteOnce"]
+      size: 10Gi
