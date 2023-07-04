@@ -1,5 +1,54 @@
 apiVersion: v1
 entries:
+  firefly-db:
+  - apiVersion: v2
+    created: "2023-07-04T20:26:05.438299256Z"
+    description: Installs a postgres db for Firefly III
+    digest: 156d49365889158cc634ac9531ab34491299ec16982f10fa0705f1dc124ac7c6
+    maintainers:
+    - email: Coollision@users.noreply.github.com
+      name: coollision
+    name: firefly-db
+    sources:
+    - https://coollision.github.io/helm-charts/firefly-db
+    type: application
+    urls:
+    - https://github.com/Coollision/helm-charts/releases/download/firefly-db-0.2.1/firefly-db-0.2.1.tgz
+    version: 0.2.1
+  firefly-iii:
+  - apiVersion: v2
+    created: "2023-07-04T20:26:05.587863105Z"
+    description: Installs Firefly III
+    digest: abeca7c93a9076e8dc579822e7eaf510cdf90645b912f3d9bbd18910da0abcbb
+    home: https://www.firefly-iii.org/
+    icon: https://raw.githubusercontent.com/firefly-iii/firefly-iii/main/.github/assets/img/logo-small.png
+    maintainers:
+    - email: Coollision@users.noreply.github.com
+      name: coollision
+    name: firefly-iii
+    sources:
+    - https://github.com/firefly-iii/firefly-iii/
+    type: application
+    urls:
+    - https://github.com/Coollision/helm-charts/releases/download/firefly-iii-1.4.0/firefly-iii-1.4.0.tgz
+    version: 1.4.0
+  importer:
+  - apiVersion: v2
+    created: "2023-07-04T20:26:05.783419834Z"
+    description: Deploys the importer chart for Firefly III
+    digest: bd9153c0b03a54fa0b4121166a0e4bec27ed377ef02c130bdd61c2c8f342ce65
+    home: https://www.firefly-iii.org/
+    icon: https://raw.githubusercontent.com/firefly-iii/firefly-iii/main/.github/assets/img/logo-small.png
+    maintainers:
+    - email: Coollision@users.noreply.github.com
+      name: coollision
+    name: importer
+    sources:
+    - https://github.com/firefly-iii/data-importer
+    type: application
+    urls:
+    - https://github.com/Coollision/helm-charts/releases/download/importer-1.3.1/importer-1.3.1.tgz
+    version: 1.3.1
   k3s-monitoring:
   - apiVersion: v2
     appVersion: 0.63.0
@@ -60,4 +109,4 @@ entries:
     urls:
     - https://github.com/Coollision/helm-charts/releases/download/k3s-monitoring-0.1.0/k3s-monitoring-0.1.0.tgz
     version: 0.1.0
-generated: "2023-05-16T20:52:08.92397771Z"
+generated: "2023-07-04T20:26:05.783428834Z"
